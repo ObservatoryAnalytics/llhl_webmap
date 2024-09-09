@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deck GL</title>
+    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    <script src="https://unpkg.com/@deck.gl/core@latest/dist.min.js"></script>
+    <script src="https://unpkg.com/@deck.gl/layers@latest/dist.min.js"></script>
+    <script src="https://unpkg.com/@deck.gl/aggregation-layers@^8.0.0/dist.min.js"></script>
+
+    <!-- optional if mapbox base map is needed -->
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css' rel='stylesheet' />
+    <!-- Allow the map to render in full screen  -->
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #legend {
+            position: absolute;
+            top: 0px;
+            left: 50px;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 50;
+            color: black;
+            width: 150px;
+            height: 250px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="legend">
+        <h4 id='legendHeading'>Basemaps</h4>
+        <label id='legendHeading'>
+            <input type="radio" name="basemap" value="dark-matter" checked>
+            Dark Matter
+        </label><br>
+        <label id='legendHeading'>
+            <input type="radio" name="basemap" value="positron">
+            Positron
+        </label><br>
+        <h4 id='legendHeading'>Layers</h4>
+        <label>
+            <input type="checkbox" name='bathy' id="bathyLayerCheckbox" checked onclick="toggle()">
+            Bathymetry Layer
+        </label><br>
+        <label id='legendHeading'>
+            <input type="checkbox" name='routes' id="routeLayerCheckbox" checked onclick="toggle()">
+            Route Layer
+        </label><br>
+        <label id='legendHeading'>
+            <input type="checkbox" name='jetties' id="jettyLayerCheckbox" checked onclick="toggle()">
+            Jetty Layer
+        </label><br>
+        <label id='legendHeading'>
+            <input type="checkbox" name="landings" id="landingsLayerCheckbox" checked onclick="toggle()">
+            Landings Layer
+        </label>
+        <br>
+        <input type="text" value="-5" id="de">
+        <button class="btn btn-primary" onclick="toggle()">
+
+    </div>
+    <script src="scripts/deck.js"></script>
+</body>
+
+</html>
