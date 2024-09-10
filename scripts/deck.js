@@ -7,7 +7,7 @@ const LINE_COLOR = [0, 255, 0]; // Green color for the lines
 const bathymetryDataUrl = 'https://raw.githubusercontent.com/Dhareey/CSV/main/bathymety.json';
 const routeDataUrl = "https://raw.githubusercontent.com/Dhareey/CSV/main/routes.js";
 const jettyDataUrl = "https://raw.githubusercontent.com/Dhareey/CSV/main/jetty_complete.js";
-const landingDataUrl = "https://raw.githubusercontent.com/Dhareey/CSV/main/jetty_landings.js";
+const islandsDataUrl = "https://raw.githubusercontent.com/ObservatoryAnalytics/llhl_webmap/main/data/Mr_Dare_Island.geojson";
 
 //Fectch the geojson file
 //fetch('data/depth.geojson').then(response => response.json()).then(data => {console.log(data)})
@@ -96,13 +96,13 @@ async function initializeLayers() {
     const poly = await fetchAndConvertBathyData(bathymetryDataUrl);
     const routepath = await fetchAndConvertRouteData(routeDataUrl);
     const jettypoint = await fetchAndConvertJettyData(jettyDataUrl);
-    const landings = await fetchAndConvertRouteData(landingDataUrl);
+    const islands = await fetchAndConvertJettyData(islandsDataUrl);
 
     // Now set up the deck.gl layers
     function toggle() {
         let bathyVisibility = document.getElementById('bathyLayerCheckbox').checked;
         let routeVisibility = document.getElementById('routeLayerCheckbox').checked;
-        let ref = parseFloat(document.getElementById('de').value);
+        let islandsVisibility = document.getElementById('islandsLayerCheckbox').checked;
 
         let layers = [
             new PolygonLayer({
@@ -267,11 +267,86 @@ async function initializeLayers() {
                 pickable: true,
                 visible: bathyVisibility,
                 // Add updateTrigger for getFillColor based on ref
-                updateTriggers: {
-                    getFillColor: [ref] // Update when reference value changes
-                }
+
             }),
             // Add other layers here (e.g., route paths, jetty points, etc.)
+            new PathLayer({
+                id: "GridLayer",
+                data: routepath, // Provide your route dataset here
+                getPath: (d) => d.path, // Assuming your route dataset has a 'path' property
+                getColor: (d) => {
+                    const routename = d.name;
+                    switch (routename) {
+                        case "Agboyi-Ajah":
+                            return [103, 0, 13];
+                            break;
+                        case "Ajah-Takwa Bay":
+                            return [147, 11, 19];
+                            break;
+                        case "Amuwo-Odofin to Falomo":
+                            return [179, 18, 24];
+                            break;
+                        case "Baiyeku-Ajah":
+                            return [201, 24, 29];
+                            break;
+                        case "Baiyeku-Falomo":
+                            return [221, 42, 37];
+                            break;
+                        case "Falomo- Ikorodu":
+                            return [240, 62, 46];
+                            break;
+                        case "Falomo-Ajah":
+                            return [246, 87, 62];
+                            break;
+                        case "Falomo-Ilado":
+                            return [251, 112, 80];
+                            break;
+                        case "Falomo-Oworonsoki":
+                            return [252, 134, 102];
+                            break;
+                        case "Falomo-Takwa Bay":
+                            return [252, 156, 126];
+                            break
+                        case "Ikorodu-Ebutu Ero":
+                            return [252, 179, 152];
+                            break;
+                        case "Ikorodu-Takwa Bay":
+                            return [253, 200, 178];
+                            break;
+                        case "Osborne-Ikorodu":
+                            return [254, 220, 205];
+                            break;
+                        case "Oworonsoki-Oshodi":
+                            return [254, 233, 224];
+                            break;
+                        default:
+                            return [0, 255, 0];
+                            break;
+                    }
+                }, // Red color for routes
+                getWidth: 40, // Width of the route lines
+                getDashArray: [8, 4], // Dashed line effect
+                pickable: true,
+                visible: routeVisibility
+            }),
+            new PolygonLayer({
+                id: 'island-layer',
+                data: islands,
+                extruded: true,
+                stroked: true,
+                filled: true,
+                wireframe: false,
+                lineWidthMinPixels: 0,
+                getPolygon: d => d.position,
+                getElevation: d => 2,
+                getFillColor: (d) => [203, 189, 147],
+                getLineColor: (d) => [203, 189, 147],
+                getLineWidth: d => 0,
+                pickable: true,
+                visible: islandsVisibility,
+                // Add updateTrigger for getFillColor based on ref
+
+            }),
         ];
 
         deckcontainer.setProps({ layers });
@@ -280,10 +355,11 @@ async function initializeLayers() {
     // Initialize deck.gl with the fetched data
     const deckcontainer = new DeckGL({
         mapStyle: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+        //mapStyle: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
         initialViewState: {
             longitude: 3.463221,
             latitude: 6.502195,
-            zoom: 1,
+            zoom: 11,
             maxZoom: 20,
             pitch: 0,
             bearing: 0
