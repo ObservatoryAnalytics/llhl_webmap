@@ -120,8 +120,8 @@ async function fetchAndConvertIslandData(url) {
 // Fetch the data using await within an async function
 const poly = await fetchAndConvertBathyData(bathymetryDataUrl);
 const routepath = await fetchAndConvertRouteData(routeDataUrl);
-const ekoRoutes = await fetchAndConvertIslandData(ekoRoutesUrl);
-const islands = await fetchAndConvertJettyData(islandsDataUrl);
+const ekoRoutes = await fetchAndConvertRouteData(ekoRoutesUrl);
+const islands = await fetchAndConvertIslandData(islandsDataUrl);
 
 
 // Now set up the deck.gl layers
@@ -374,7 +374,7 @@ export function toggle() {
             filled: true,
             wireframe: false,
             lineWidthMinPixels: 0,
-            getPolygon: d => d.position,
+            getPolygon: d => d.path,
             getElevation: d => 2,
             getFillColor: (d) => [203, 189, 147],
             getLineColor: (d) => [203, 189, 147],
@@ -410,9 +410,9 @@ const deckcontainer = new DeckGL({
         } else if (object && object.avg_depth !== undefined) {
             return `Route name: ${object.name}
     Average Depth: ${object.avg_depth}m`;
-        } else if (object && object.area !==undefined) {
+        } else if (object && object.island_area) {
             return `Island name: ${object.name}
-            Area: ${object.area}m²`;
+            Area: ${object.island_area}sqm`;
         }
     }
 });
