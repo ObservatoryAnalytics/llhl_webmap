@@ -136,7 +136,9 @@ export function toggle() {
     let bathyVisibility = document.getElementById('bathyLayerCheckbox').checked;
     let routeVisibility = document.getElementById('routeLayerCheckbox').checked;
     let islandsVisibility = document.getElementById('islandsLayerCheckbox').checked;
-    let ekoRoutesVisibility = document.getElementById('ekoRoutesLayerCheckbox').checked
+    let ekoRoutesVisibility = document.getElementById('ekoRoutesLayerCheckbox').checked;
+    let lagoonHighwayVisibility = document.getElementById('lagoonLayerCheckbox').checked
+    let halfMoonVisibility = document.getElementById('crescentLayerCheckbox').checked
 
     let layers = [
         new PolygonLayer({
@@ -407,7 +409,7 @@ export function toggle() {
             getLineWidth: d => 0,
             getText: d => d.name,
             pickable: true,
-            visible: islandsVisibility,
+            visible: halfMoonVisibility,
             // Add updateTrigger for getFillColor based on ref
 
         }),
@@ -419,7 +421,7 @@ export function toggle() {
             getWidth: 40, // Width of the route lines
             getDashArray: [8, 4], // Dashed line effect
             pickable: true,
-            visible: ekoRoutesVisibility
+            visible: lagoonHighwayVisibility
         })
 
     ];
@@ -463,6 +465,9 @@ document.getElementById('bathyLayerCheckbox').onclick = toggle;
 document.getElementById('routeLayerCheckbox').onclick = toggle;
 document.getElementById('islandsLayerCheckbox').onclick = toggle;
 document.getElementById('ekoRoutesLayerCheckbox').onclick = toggle;
+document.getElementById('crescentLayerCheckbox').onclick = toggle;
+document.getElementById('lagoonLayerCheckbox').onclick = toggle;
+
 
 
 
