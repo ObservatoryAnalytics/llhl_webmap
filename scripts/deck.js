@@ -63,6 +63,7 @@ function convertRouteToPaths(routegeojson) {
         const name = feature.properties.Name;
         const route_code = feature.properties.Route_ID;
         const avg_depth = feature.properties["Avg Depth"];
+        const description = feature.properties['descriptio']
 
         routePaths.push({ path, name, route_code, avg_depth });
     });
