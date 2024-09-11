@@ -67,8 +67,9 @@ function convertRouteToPaths(routegeojson) {
         const avg_depth = feature.properties["Avg Depth"];
         const description = feature.properties['descriptio']
         const lagoon_name = feature.properties['road_name']
+        const r_name = feature.properties['name']
 
-        routePaths.push({ path, name, route_code, avg_depth, description, lagoon_name });
+        routePaths.push({ path, name, route_code, avg_depth, description, lagoon_name, r_name });
     });
     return routePaths;
 }
@@ -397,16 +398,15 @@ export function toggle() {
         new PolygonLayer({
             id: 'halfmoon-layer',
             data: half_moon_data,
-            extruded: true,
+            extruded: false,
             stroked: true,
-            filled: true,
-            wireframe: false,
-            lineWidthMinPixels: 5,
+            filled: false,
+            wireframe: true,
+            lineWidthMinPixels: 2,
             getPolygon: d => d.contour,
             getElevation: d => 2,
-            getFillColor: (d) => [255, 0, 0],
-            getLineColor: (d) => [0, 0, 255],
-            getLineWidth: d => 0,
+            getLineColor: (d) => [255, 0, 0],
+            getLineWidth: d => 2,
             getText: d => d.name,
             pickable: true,
             visible: halfMoonVisibility,
@@ -455,6 +455,8 @@ const deckcontainer = new DeckGL({
             return `Island name: ${object.island_name}`
         } else if (object && object.lagoon_name != undefined) {
             return `Road name: ${object.lagoon_name}`
+        } else if (object && object.description != undefined) {
+            return `Route name: ${object.r_name}`
         }
     }
 });
