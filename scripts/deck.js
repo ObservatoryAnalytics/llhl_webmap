@@ -379,6 +379,7 @@ export function toggle() {
             getFillColor: (d) => [203, 189, 147],
             getLineColor: (d) => [203, 189, 147],
             getLineWidth: d => 0,
+            getText: d => d.name,
             pickable: true,
             visible: islandsVisibility,
             // Add updateTrigger for getFillColor based on ref
@@ -411,8 +412,7 @@ const deckcontainer = new DeckGL({
             return `Route name: ${object.name}
     Average Depth: ${object.avg_depth}m`;
         } else if (object && object.island_area) {
-            return `Island name: ${object.name}
-            Area: ${object.island_area}sqm`;
+            return `Island name: ${object.name}`;
         }
     }
 });
