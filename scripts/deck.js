@@ -8,7 +8,8 @@ const bathymetryDataUrl = 'https://raw.githubusercontent.com/Dhareey/CSV/main/ba
 const routeDataUrl = "https://raw.githubusercontent.com/Dhareey/CSV/main/routes.js";
 const ekoRoutesUrl = "https://raw.githubusercontent.com/ObservatoryAnalytics/llhl_webmap/main/data/eko_route.geojson";
 const islandsDataUrl = "https://raw.githubusercontent.com/ObservatoryAnalytics/llhl_webmap/main/data/Mr_Dare_Island.geojson";
-
+const half_moon = "https://raw.githubusercontent.com/ObservatoryAnalytics/llhl_webmap/main/data/Half_moon.geojson"
+const highway = "https://raw.githubusercontent.com/ObservatoryAnalytics/llhl_webmap/main/data/lagoon_highway.geojson"
 //Fectch the geojson file
 //fetch('data/depth.geojson').then(response => response.json()).then(data => {console.log(data)})
 
@@ -19,12 +20,13 @@ function convertGeoJSONToPaths(geojsonData) {
 
     geojsonData.features.forEach((feature) => {
         const contour = feature.geometry.coordinates[0][0];
-        const depth = feature.properties.DN || 0.0; // Adjust as needed
+        const depth = feature.properties.DN; // Adjust as needed
         const id = feature.properties.fid_1;
         const band = feature.properties.band_0;
         const color = [255, 0, 128]; // You can customize the color here
+        const island_name = feature.properties.island_nam
 
-        polygons.push({ contour, depth, id, band, color });
+        polygons.push({ contour, depth, id, band, color, island_name });
     });
 
     return polygons;
@@ -64,8 +66,9 @@ function convertRouteToPaths(routegeojson) {
         const route_code = feature.properties.Route_ID;
         const avg_depth = feature.properties["Avg Depth"];
         const description = feature.properties['descriptio']
+        const lagoon_name = feature.properties['road_name']
 
-        routePaths.push({ path, name, route_code, avg_depth });
+        routePaths.push({ path, name, route_code, avg_depth, description, lagoon_name });
     });
     return routePaths;
 }
@@ -77,6 +80,7 @@ function convertIslandToPaths(routegeojson) {
         const name = feature.properties.Name;
         const island_code = feature.properties.OBJECTID;
         const island_area = feature.properties["Area(sqkm)"];
+
 
         islandPaths.push({ path, name, island_code, island_area });
     });
@@ -123,6 +127,8 @@ const poly = await fetchAndConvertBathyData(bathymetryDataUrl);
 const routepath = await fetchAndConvertRouteData(routeDataUrl);
 const ekoRoutes = await fetchAndConvertRouteData(ekoRoutesUrl);
 const islands = await fetchAndConvertIslandData(islandsDataUrl);
+const half_moon_data = await fetchAndConvertBathyData(half_moon);
+const island_road = await fetchAndConvertRouteData(highway);
 
 
 // Now set up the deck.gl layers
@@ -385,6 +391,35 @@ export function toggle() {
             visible: islandsVisibility,
             // Add updateTrigger for getFillColor based on ref
 
+        }),
+        new PolygonLayer({
+            id: 'halfmoon-layer',
+            data: half_moon_data,
+            extruded: true,
+            stroked: true,
+            filled: true,
+            wireframe: false,
+            lineWidthMinPixels: 5,
+            getPolygon: d => d.contour,
+            getElevation: d => 2,
+            getFillColor: (d) => [255, 0, 0],
+            getLineColor: (d) => [0, 0, 255],
+            getLineWidth: d => 0,
+            getText: d => d.name,
+            pickable: true,
+            visible: islandsVisibility,
+            // Add updateTrigger for getFillColor based on ref
+
+        }),
+        new PathLayer({
+            id: "crescentLayer",
+            data: island_road, // Provide your route dataset here
+            getPath: (d) => d.path, // Assuming your route dataset has a 'path' property
+            getColor: (d) => [255, 225, 0],
+            getWidth: 40, // Width of the route lines
+            getDashArray: [8, 4], // Dashed line effect
+            pickable: true,
+            visible: ekoRoutesVisibility
         })
 
     ];
@@ -414,6 +449,10 @@ const deckcontainer = new DeckGL({
     Average Depth: ${object.avg_depth}m`;
         } else if (object && object.island_area) {
             return `Island name: ${object.name}`;
+        } else if (object && object.island_name != undefined) {
+            return `Island name: ${object.island_name}`
+        } else if (object && object.lagoon_name != undefined) {
+            return `Road name: ${object.lagoon_name}`
         }
     }
 });
